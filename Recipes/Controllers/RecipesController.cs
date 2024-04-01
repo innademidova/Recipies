@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Recipes.Models;
 using Recipes.ViewModel;
@@ -15,6 +16,7 @@ public class RecipesController(RecipesContext context) : ControllerBase
 		return await context.Recipes.Include(r => r.Author).ToListAsync();
 	}
 
+	[Authorize] 
 	[HttpPost]
 	public async Task<Recipe> Create(CreateRecipeRequest request)
 	{

@@ -12,7 +12,7 @@ public class JwtTokenGenerator
     {
         var signingCredentials = new SigningCredentials(
             new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("This is the secret phrase")),
+                Encoding.UTF8.GetBytes(AuthOptions.Key)),
             SecurityAlgorithms.HmacSha256);
 
         var claims = new[]
