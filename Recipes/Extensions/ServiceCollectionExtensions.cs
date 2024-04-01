@@ -11,6 +11,7 @@ public static class ServiceCollectionExtensions
 	{
 		services.AddFluentValidationAutoValidation();
 		services.AddScoped<IValidator<CreateUserRequest>, CreateUserRequestValidator>();
+		services.AddScoped<IValidator<CreateRecipeRequest>, CreateRecipeRequestValidator>();
 		return services;
 	}
 }
