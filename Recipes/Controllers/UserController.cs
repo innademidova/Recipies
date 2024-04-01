@@ -18,6 +18,13 @@ public class UserController(RecipesContext context): ControllerBase
 	[HttpPost]
 	public async Task<ActionResult<User>> Create(CreateUserRequest request)
 	{
+		var existedUser = await context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+
+		if (existedUser != null)
+		{
+			return BadRequest($"Email {request.Email} has already exist");
+		}
+		
 		try
 		{
 			User user = new User()
@@ -27,7 +34,7 @@ public class UserController(RecipesContext context): ControllerBase
 				FirstName = request.FirstName,
 				LastName = request.LastName
 			};
-
+			
 			context.Users.Add(user);
 			await context.SaveChangesAsync();
 

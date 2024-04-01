@@ -12,7 +12,7 @@ public class RecipesController(RecipesContext context) : ControllerBase
 	[HttpGet]
 	public async Task<IEnumerable<Recipe>> Get()
 	{
-		return await context.Recipes.ToListAsync();
+		return await context.Recipes.Include(r => r.Author).ToListAsync();
 	}
 
 	[HttpPost]
@@ -22,7 +22,7 @@ public class RecipesController(RecipesContext context) : ControllerBase
 		{
 			Description = request.Description,
 			CreatedAt = DateTime.UtcNow,
-			Author = request.Author,
+			AuthorId = 1,
 			ImageUrl = request.ImageUrl
 		};
 		

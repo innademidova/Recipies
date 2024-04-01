@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Recipes;
+using Recipes.Extensions;
 using Serilog;
 using Serilog.Events;
 
@@ -20,6 +21,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.AddDbContext<RecipesContext>(
 	options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")!));
+builder.Services.AddFluentValidators();
 
 var app = builder.Build();
 

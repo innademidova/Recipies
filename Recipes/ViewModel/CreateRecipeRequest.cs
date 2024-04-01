@@ -1,3 +1,5 @@
-﻿namespace Recipes.ViewModel;
+﻿using System.ComponentModel.DataAnnotations;
 
-public record CreateRecipeRequest(string Description, string Author, string ImageUrl);
+namespace Recipes.ViewModel;
+
+public record CreateRecipeRequest(string Description, string ImageUrl);

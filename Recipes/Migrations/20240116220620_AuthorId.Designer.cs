@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Recipes;
 
@@ -11,9 +12,11 @@ using Recipes;
 namespace Recipes.Migrations
 {
     [DbContext(typeof(RecipesContext))]
-    partial class RecipesContextModelSnapshot : ModelSnapshot
+    [Migration("20240116220620_AuthorId")]
+    partial class AuthorId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,6 +33,10 @@ namespace Recipes.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Author")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("AuthorId")
                         .HasColumnType("int");
 
@@ -45,8 +52,6 @@ namespace Recipes.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AuthorId");
 
                     b.ToTable("Recipes");
                 });
@@ -80,17 +85,6 @@ namespace Recipes.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("Recipes.Models.Recipe", b =>
-                {
-                    b.HasOne("Recipes.Models.User", "Author")
-                        .WithMany()
-                        .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Author");
                 });
 #pragma warning restore 612, 618
         }
