@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Recipes.Authentication;
 using Recipes.Models;
 using Recipes.ViewModel;
 
@@ -7,8 +8,10 @@ namespace Recipes.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class UserController(RecipesContext context): ControllerBase
+public class UsersController(RecipesContext context): ControllerBase
 {
+	private readonly JwtTokenGenerator _tokenGenerator = new();
+	
 	[HttpGet]
 	public async Task<IEnumerable<User>> Get()
 	{
@@ -32,13 +35,15 @@ public class UserController(RecipesContext context): ControllerBase
 				Email = request.Email,
 				CreatedAt = DateTime.UtcNow,
 				FirstName = request.FirstName,
-				LastName = request.LastName
+				LastName = request.LastName,
+				Password = request.Password
 			};
 			
+			var accessToken = _tokenGenerator.GenerateToken(user);
 			context.Users.Add(user);
 			await context.SaveChangesAsync();
 
-			return user;
+			return Ok(new{accessToken, user});
 		}
 		catch (Exception e)
 		{

@@ -7,4 +7,5 @@ public class User
 	public string LastName { get; set; } = null!;
 	public DateTime CreatedAt { get; set; }
 	public string Email { get; set; } = null!;
+	public string Password { get; set; } = null!;
 }

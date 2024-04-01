@@ -1,5 +1,9 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Recipes;
+using Recipes.Authentication;
 using Recipes.Extensions;
 using Serilog;
 using Serilog.Events;
@@ -22,6 +26,18 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<RecipesContext>(
 	options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")!));
 builder.Services.AddFluentValidators();
+builder.Services.AddAuthentication(defaultScheme: JwtBearerDefaults.AuthenticationScheme)
+	.AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
+	{
+		ValidateIssuer = true,
+		ValidateAudience = true,
+		ValidateLifetime = true,
+		ValidateIssuerSigningKey = true,
+		ValidIssuer = AuthOptions.Issuer,
+		ValidAudience = AuthOptions.Audience,
+		IssuerSigningKey = new SymmetricSecurityKey(
+			Encoding.UTF8.GetBytes(AuthOptions.Key))
+	});
 
 var app = builder.Build();
 
@@ -34,6 +50,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 app.Run();
