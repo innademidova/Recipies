@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Recipes.Extensions;
 using Recipes.Models;
 using Recipes.ViewModel;
 
@@ -20,11 +22,12 @@ public class RecipesController(RecipesContext context) : ControllerBase
 	[HttpPost]
 	public async Task<Recipe> Create(CreateRecipeRequest request)
 	{
+		var id = this.GetUserId();
 		var recipe = new Recipe
 		{
 			Description = request.Description,
 			CreatedAt = DateTime.UtcNow,
-			AuthorId = 1,
+			AuthorId = id,
 			ImageUrl = request.ImageUrl
 		};
 		

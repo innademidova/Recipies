@@ -2,6 +2,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Recipes;
 using Recipes.Authentication;
 using Recipes.Extensions;
@@ -21,23 +22,12 @@ builder.Host.UseSerilog((_, lc) => lc
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerWithAuthorization();
 builder.Services.AddControllers();
 builder.Services.AddDbContext<RecipesContext>(
 	options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")!));
 builder.Services.AddFluentValidators();
-builder.Services.AddAuthentication(defaultScheme: JwtBearerDefaults.AuthenticationScheme)
-	.AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
-	{
-		ValidateIssuer = true,
-		ValidateAudience = true,
-		ValidateLifetime = true,
-		ValidateIssuerSigningKey = true,
-		ValidIssuer = AuthOptions.Issuer,
-		ValidAudience = AuthOptions.Audience,
-		IssuerSigningKey = new SymmetricSecurityKey(
-			Encoding.UTF8.GetBytes(AuthOptions.Key))
-	});
+builder.Services.AddJwtBearerAuthentication();
 
 var app = builder.Build();
 

@@ -39,10 +39,10 @@ public class UsersController(RecipesContext context): ControllerBase
 				Password = request.Password
 			};
 			
-			var accessToken = _tokenGenerator.GenerateToken(user);
 			context.Users.Add(user);
 			await context.SaveChangesAsync();
 
+			var accessToken = _tokenGenerator.GenerateToken(user);
 			return Ok(new{accessToken, user});
 		}
 		catch (Exception e)
