@@ -10,7 +10,7 @@ namespace Recipes.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class RecipesController(RecipesContext context) : ControllerBase
+public class RecipesController(RecipesContext context, ILogger<RecipesController> _logger) : ControllerBase
 {
 	[HttpGet]
 	public async Task<IEnumerable<Recipe>> Get()
@@ -30,6 +30,9 @@ public class RecipesController(RecipesContext context) : ControllerBase
 			AuthorId = id,
 			ImageUrl = request.ImageUrl
 		};
+		
+		_logger.LogInformation("Created recipe by Author {AuthorId}", recipe.AuthorId);
+		
 		
 		context.Recipes.Add(recipe);
 		await context.SaveChangesAsync();
