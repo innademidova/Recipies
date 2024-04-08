@@ -19,7 +19,7 @@ public class UsersController(RecipesContext context, UserService userService) : 
     }
 
     [HttpPost("register")]
-    public async Task<ActionResult<User>> Register(RegistrationRequest request)
+    public async Task<ActionResult<RegistrationResponse>> Register(RegistrationRequest request)
     {
         var userResponse = await userService.Register(request.FirstName, request.LastName, request.Email, request.Password);
 
@@ -27,7 +27,7 @@ public class UsersController(RecipesContext context, UserService userService) : 
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<User>> Login(LoginRequest request)
+    public async Task<ActionResult<RegistrationResponse>> Login(LoginRequest request)
     {
         var loginResponse = await userService.Login(request.Email, request.Password);
 

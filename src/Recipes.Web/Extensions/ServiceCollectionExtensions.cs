@@ -7,6 +7,7 @@ using Microsoft.OpenApi.Models;
 using Recipes.BLL.Authentication;
 using Recipes.Validators;
 using Recipes.ViewModel;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace Recipes.Extensions;
 
@@ -52,7 +53,11 @@ public static class ServiceCollectionExtensions
 					new string[] { }
 				}
 			});
+			c.ExampleFilters();
 		});
+		
+		services.AddSwaggerExamplesFromAssemblyOf<Program>();
+		
 		return services;
 	}
 	
