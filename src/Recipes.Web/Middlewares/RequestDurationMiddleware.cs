@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using Serilog;
 using ILogger = Serilog.ILogger;
 
 namespace Recipes.Middlewares;
@@ -29,7 +28,7 @@ public class RequestDurationMiddleware
 
             if (elapsedMilliseconds > 300)
             {
-                Log.Warning("Request {Method} {Path} took {ElapsedMilliseconds}ms", context.Request.Method, context.Request.Path, elapsedMilliseconds);
+                _logger.Warning("Request {Method} {Path} took {ElapsedMilliseconds}ms", context.Request.Method, context.Request.Path, elapsedMilliseconds);
             }
         }
     }

@@ -1,7 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using LanguageExt.Common;
+using Microsoft.EntityFrameworkCore;
 using Recipes.BLL.Authentication;
 using Recipes.BLL.Exceptions;
 using Recipes.DAL;
+using Recipes.DAL.Models;
 
 namespace Recipes.BLL.Services;
 
@@ -15,18 +17,44 @@ public class UserService
         _context = context;
     }
 
-    public async Task<(int UserId, string AccessToken)> Login(string email, string password)
+    public async Task<Result<(int UserId, string AccessToken)>> Register(string firstName, string lastName, string email, string password)
+    {
+        var existedUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+        if (existedUser != null)
+        {
+            return new Result<(int UserId, string AccessToken)>(new RecipesValidationException("Unhandled exception: user already exists"));
+        }
+        
+        string passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
+        var user = new User
+        {
+            Email = email,
+            CreatedAt = DateTime.UtcNow,
+            FirstName = firstName,
+            LastName = lastName,
+            Password = passwordHash
+        };
+
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+
+        var accessToken = _tokenGenerator.GenerateToken(user);
+
+        return (user.Id, accessToken);
+    }
+    public async Task<Result<(int UserId, string AccessToken)>> Login(string email, string password)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
 
         if (user == null)
         {
-            throw new RecipesValidationException("Email or password are incorrect");
+            return new Result<(int UserId, string AccessToken)>(new RecipesValidationException("Email or password are incorrect"));
         }
 
-        if (user.Password != password)
+        if (!BCrypt.Net.BCrypt.Verify(password, user.Password))
         {
-            throw new RecipesValidationException("Email or password are incorrect");
+            return new Result<(int UserId, string AccessToken)>(new RecipesValidationException("Email or password are incorrect"));
         }
 
         var accessToken = _tokenGenerator.GenerateToken(user);

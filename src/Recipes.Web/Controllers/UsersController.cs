@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Recipes.BLL.Authentication;
 using Recipes.BLL.Services;
 using Recipes.DAL;
 using Recipes.DAL.Models;
+using Recipes.Extensions;
 using Recipes.ViewModel;
 
 namespace Recipes.Controllers;
@@ -12,8 +12,6 @@ namespace Recipes.Controllers;
 [ApiController]
 public class UsersController(RecipesContext context, UserService userService) : ControllerBase
 {
-    private readonly JwtTokenGenerator _tokenGenerator = new();
-
     [HttpGet]
     public async Task<IEnumerable<User>> Get()
     {
@@ -23,28 +21,9 @@ public class UsersController(RecipesContext context, UserService userService) : 
     [HttpPost("register")]
     public async Task<ActionResult<User>> Register(RegistrationRequest request)
     {
-        var existedUser = await context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+        var userResponse = await userService.Register(request.FirstName, request.LastName, request.Email, request.Password);
 
-        if (existedUser != null)
-        {
-            throw new Exception("Unhandled exception: user already exists");
-        }
-
-        var user = new User()
-        {
-            Email = request.Email,
-            CreatedAt = DateTime.UtcNow,
-            FirstName = request.FirstName,
-            LastName = request.LastName,
-            Password = request.Password
-        };
-
-        context.Users.Add(user);
-        await context.SaveChangesAsync();
-
-        var accessToken = _tokenGenerator.GenerateToken(user);
-
-        return Ok(new RegistrationResponse(user.Id, accessToken));
+        return this.ToOk(userResponse, result => new RegistrationResponse(result.UserId, result.AccessToken));
     }
 
     [HttpPost("login")]
@@ -52,6 +31,6 @@ public class UsersController(RecipesContext context, UserService userService) : 
     {
         var loginResponse = await userService.Login(request.Email, request.Password);
 
-        return Ok(new RegistrationResponse(loginResponse.UserId, loginResponse.AccessToken));
+        return this.ToOk(loginResponse, result => new RegistrationResponse(result.UserId, result.AccessToken));
     }
 }
