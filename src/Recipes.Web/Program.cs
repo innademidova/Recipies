@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Recipes.BLL.Interfaces;
 using Recipes.BLL.Services;
 using Recipes.DAL;
 using Recipes.Extensions;
@@ -21,7 +22,8 @@ builder.Services
     .AddFluentValidators()
     .AddJwtBearerAuthentication()
     .AddProblemDetails()
-    .AddScoped<UserService>();
+    .AddScoped<UserService>()
+    .AddScoped<IRecipeService, RecipeService>();
 
 var app = builder.Build();
 
