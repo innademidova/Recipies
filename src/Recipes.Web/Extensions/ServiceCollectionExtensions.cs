@@ -7,6 +7,7 @@ using Microsoft.OpenApi.Models;
 using Recipes.BLL.Authentication;
 using Recipes.Validators;
 using Recipes.ViewModel;
+using Recipes.ViewModels;
 using Swashbuckle.AspNetCore.Filters;
 
 namespace Recipes.Extensions;

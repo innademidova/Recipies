@@ -4,12 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Recipes;
 using Recipes.DAL;
 
 #nullable disable
 
-namespace Recipes.Migrations
+namespace Recipes.DAL.Migrations
 {
     [DbContext(typeof(RecipesContext))]
     partial class RecipesContextModelSnapshot : ModelSnapshot
@@ -18,12 +17,12 @@ namespace Recipes.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "8.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Recipes.Web.Models.Recipe", b =>
+            modelBuilder.Entity("Recipes.DAL.Models.Recipe", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -49,10 +48,10 @@ namespace Recipes.Migrations
 
                     b.HasIndex("AuthorId");
 
-                    b.ToTable("Recipes.Web");
+                    b.ToTable("Recipes");
                 });
 
-            modelBuilder.Entity("Recipes.Web.Models.User", b =>
+            modelBuilder.Entity("Recipes.DAL.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -65,19 +64,18 @@ namespace Recipes.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.HasKey("Id");
 
@@ -87,15 +85,59 @@ namespace Recipes.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Recipes.Web.Models.Recipe", b =>
+            modelBuilder.Entity("Recipes.DAL.Models.UserAccount", b =>
                 {
-                    b.HasOne("Recipes.Web.Models.User", "Author")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("UserAccount");
+                });
+
+            modelBuilder.Entity("Recipes.DAL.Models.Recipe", b =>
+                {
+                    b.HasOne("Recipes.DAL.Models.User", "Author")
                         .WithMany()
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Author");
+                });
+
+            modelBuilder.Entity("Recipes.DAL.Models.UserAccount", b =>
+                {
+                    b.HasOne("Recipes.DAL.Models.User", null)
+                        .WithOne("UserAccount")
+                        .HasForeignKey("Recipes.DAL.Models.UserAccount", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Recipes.DAL.Models.User", b =>
+                {
+                    b.Navigation("UserAccount")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

@@ -17,6 +17,10 @@ public class UserService
         _context = context;
     }
 
+    public async Task<IEnumerable<User>> GetRecipes()
+    {
+        return await _context.Users.Include(u => u.UserAccount).ToListAsync();
+    }
     public async Task<Result<(int UserId, string AccessToken)>> Register(string firstName, string lastName, string email, string password)
     {
         var existedUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
@@ -33,7 +37,10 @@ public class UserService
             CreatedAt = DateTime.UtcNow,
             FirstName = firstName,
             LastName = lastName,
-            Password = passwordHash
+            UserAccount = new UserAccount
+            {
+                Password = passwordHash,
+            },
         };
 
         _context.Users.Add(user);
@@ -45,14 +52,14 @@ public class UserService
     }
     public async Task<Result<(int UserId, string AccessToken)>> Login(string email, string password)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        var user = await _context.Users.Include(u => u.UserAccount).FirstOrDefaultAsync(u => u.Email == email);
 
         if (user == null)
         {
             return new Result<(int UserId, string AccessToken)>(new RecipesValidationException("Email or password are incorrect"));
         }
 
-        if (!BCrypt.Net.BCrypt.Verify(password, user.Password))
+        if (!BCrypt.Net.BCrypt.Verify(password, user.UserAccount.Password))
         {
             return new Result<(int UserId, string AccessToken)>(new RecipesValidationException("Email or password are incorrect"));
         }

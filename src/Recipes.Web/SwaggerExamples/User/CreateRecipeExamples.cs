@@ -1,5 +1,6 @@
 ﻿using Bogus;
 using Recipes.ViewModel;
+using Recipes.ViewModels;
 using Swashbuckle.AspNetCore.Filters;
 
 namespace Recipes.SwaggerExamples.User;

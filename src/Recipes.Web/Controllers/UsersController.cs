@@ -5,6 +5,7 @@ using Recipes.DAL;
 using Recipes.DAL.Models;
 using Recipes.Extensions;
 using Recipes.ViewModel;
+using Recipes.ViewModels;
 
 namespace Recipes.Controllers;
 
@@ -15,7 +16,7 @@ public class UsersController(RecipesContext context, UserService userService) : 
     [HttpGet]
     public async Task<IEnumerable<User>> Get()
     {
-        return await context.Users.ToListAsync();
+        return await userService.GetRecipes();
     }
 
     [HttpPost("register")]

@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using Recipes.ViewModel;
+using Recipes.ViewModels;
 
 namespace Recipes.Validators;
 

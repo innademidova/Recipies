@@ -23,13 +23,11 @@ public class RecipesController(RecipesContext context, ILogger<RecipesController
 
         return recipesViewModel;
     }
-
-    [Authorize]
+    
     [HttpPost]
     public async Task<RecipeViewModel> Create(CreateRecipeRequest request)
     {
-        var userId = this.GetUserId();
-        var recipeDto = await _recipeService.CreateRecipe(request.Description, userId, request.ImageUrl);
+        var recipeDto = await _recipeService.CreateRecipe(request.Description, request.ImageUrl);
 
         _logger.LogInformation("Created recipe by Author {AuthorId}", recipeDto.AuthorId);
 

@@ -10,10 +10,12 @@ namespace Recipes.BLL.Services;
 public class RecipeService : IRecipeService
 {
     private readonly RecipesContext _context;
+    private readonly ICurrentUser _currentUser;
 
-    public RecipeService(RecipesContext context)
+    public RecipeService(RecipesContext context, ICurrentUser currentUser)
     {
         _context = context;
+        _currentUser = currentUser;
     }
 
     public async Task<IEnumerable<RecipeDto>> GetRecipes()
@@ -23,19 +25,23 @@ public class RecipeService : IRecipeService
             .ToListAsync();
     }
     
-    public async Task<RecipeDto> CreateRecipe(string description, int userId, string imageUrl)
+    public async Task<RecipeDto> CreateRecipe(string description, string imageUrl)
     {
         var recipe = new Recipe
         {
             Description = description,
             CreatedAt = DateTime.UtcNow,
-            AuthorId = userId,
+            AuthorId = _currentUser.Id,
             ImageUrl = imageUrl
         };
 
         _context.Recipes.Add(recipe);
         await _context.SaveChangesAsync();
 
+
+        await _context.Entry(recipe).Reference(b => b.Author)
+            .LoadAsync();
+        
         return recipe.ToDto();
     }
 }

@@ -3,6 +3,7 @@ using Recipes.BLL.Interfaces;
 using Recipes.BLL.Services;
 using Recipes.DAL;
 using Recipes.Extensions;
+using Recipes.Infrastructure;
 using Recipes.Middlewares;
 using Serilog;
 
@@ -23,7 +24,8 @@ builder.Services
     .AddJwtBearerAuthentication()
     .AddProblemDetails()
     .AddScoped<UserService>()
-    .AddScoped<IRecipeService, RecipeService>();
+    .AddScoped<IRecipeService, RecipeService>()
+    .AddScoped<ICurrentUser, CurrentUser>(); 
 
 var app = builder.Build();
 
@@ -43,6 +45,7 @@ app
 
 app.InDevelopment(b =>
         b.UseDeveloperExceptionPage())
-    .UseMiddleware<BusinessValidationMiddleware>();
+    .UseMiddleware<BusinessValidationMiddleware>()
+    .UseMiddleware<SetupUserClaimsMiddleware>();
 
 app.Run();
