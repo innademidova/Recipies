@@ -22,6 +22,8 @@ public class JwtTokenGenerator
             new Claim(JwtRegisteredClaimNames.FamilyName, user.LastName),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(JwtRegisteredClaimNames.Email, user.Email),
+            new Claim(ClaimsIdentity.DefaultRoleClaimType, user.UserAccount.Role.ToString()),
+            new Claim("IsBanned", user.UserAccount.IsBanned.ToString())
         };
 
         var securityToken = new JwtSecurityToken(

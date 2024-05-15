@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Recipes.BLL.Authentication;
 using Recipes.BLL.Exceptions;
+using Recipes.BLL.Interfaces;
 using Recipes.DAL;
 using Recipes.DAL.Models;
 
@@ -11,10 +12,12 @@ public class UserService
 {
     private readonly JwtTokenGenerator _tokenGenerator = new();
     private readonly RecipesContext _context;
+    private readonly ICurrentUser _currentUser;
 
-    public UserService(RecipesContext context)
+    public UserService(RecipesContext context, ICurrentUser currentUser)
     {
         _context = context;
+        _currentUser = currentUser;
     }
 
     public async Task<IEnumerable<User>> GetRecipes()
@@ -68,4 +71,23 @@ public class UserService
 
         return (user.Id, accessToken);
     }
+
+    public async Task Ban(int userId)
+    {
+        var user = await _context.Users.Include(u => u.UserAccount).FirstOrDefaultAsync(u => u.Id == userId);
+       
+
+        if (user == null)
+        {
+            throw new RecipesValidationException("User doesn't exist.");
+        }
+
+        if (user.UserAccount.Role > _currentUser.Role)
+        {
+            throw new RecipesValidationException("You don't have permission on this action!");
+        }
+
+        user.UserAccount.IsBanned = true;
+        await _context.SaveChangesAsync();
+    } 
 }

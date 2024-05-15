@@ -2,10 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Recipes.BLL.Interfaces;
 using Recipes.DAL;
-using Recipes.DAL.Models;
-using Recipes.Extensions;
 using Recipes.Mappers;
-using Recipes.ViewModel;
 using Recipes.ViewModels;
 
 namespace Recipes.Controllers;

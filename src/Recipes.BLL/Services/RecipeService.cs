@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Recipes.BLL.DTOs.Recipe;
+using Recipes.BLL.Exceptions;
 using Recipes.BLL.Interfaces;
 using Recipes.BLL.Mappers;
 using Recipes.DAL;
@@ -27,6 +28,11 @@ public class RecipeService : IRecipeService
     
     public async Task<RecipeDto> CreateRecipe(string description, string imageUrl)
     {
+        if (_currentUser.IsBanned)
+        {
+            throw new RecipesValidationException ("You are banned");
+        }
+
         var recipe = new Recipe
         {
             Description = description,
@@ -37,7 +43,6 @@ public class RecipeService : IRecipeService
 
         _context.Recipes.Add(recipe);
         await _context.SaveChangesAsync();
-
 
         await _context.Entry(recipe).Reference(b => b.Author)
             .LoadAsync();

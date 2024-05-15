@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Recipes.BLL.Services;
 using Recipes.DAL;
 using Recipes.DAL.Models;
@@ -33,5 +33,12 @@ public class UsersController(RecipesContext context, UserService userService) : 
         var loginResponse = await userService.Login(request.Email, request.Password);
 
         return this.ToOk(loginResponse, result => new RegistrationResponse(result.UserId, result.AccessToken));
+    }
+    
+    [HttpPut("ban/{userId:int}")]
+    [Authorize(Roles = UserRoles.Admin)]
+    public async Task BanUser(int userId)
+    {
+        await userService.Ban(userId);
     }
 }
