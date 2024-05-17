@@ -7,6 +7,7 @@ public sealed class RecipesContext : DbContext
 {
     public DbSet<Recipe> Recipes => Set<Recipe>();
     public DbSet<User> Users => Set<User>();
+    public DbSet<UserSubscription> UserSubscriptions => Set<UserSubscription>();
 
     public RecipesContext(DbContextOptions<RecipesContext> options) : base(options)
     {
@@ -34,7 +35,18 @@ public sealed class RecipesContext : DbContext
 
             builder.Property(userAccount => userAccount.Password).HasMaxLength(100);
         });
+        
+        modelBuilder.Entity<UserSubscription>(builder =>
+        {
+            builder.HasOne(e => e.Subscriber).WithMany()
+                .HasForeignKey(e => e.SubscriberId)
+                .OnDelete(DeleteBehavior.Cascade);
 
+            builder.HasOne(e => e.Subscription).WithMany()
+                .HasForeignKey(e => e.SubscriptionId)
+                .OnDelete(DeleteBehavior.NoAction);
 
+            builder.HasKey(e => new {e.SubscriberId, e.SubscriptionId});
+        });
     }
 }

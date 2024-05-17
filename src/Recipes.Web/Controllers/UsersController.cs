@@ -41,4 +41,32 @@ public class UsersController(RecipesContext context, UserService userService) : 
     {
         await userService.Ban(userId);
     }
+    
+    [HttpPut("subscribe/{userId:int}")]
+    [Authorize]
+    public async Task Subscribe(int userId)
+    {
+        await userService.Subscribe(userId);
+    }
+    
+    [Authorize]
+    [HttpPut("unsubscribe/{userId:int}")]
+    public async Task Unsubscribe(int userId)
+    {
+        await userService.Unsubscribe(userId);
+    }
+    
+    [Authorize]
+    [HttpGet("subscriptions")]
+    public async Task<List<UserSubscription>> GetSubscriptions()
+    {
+        return await userService.GetSubscriptions();
+    }
+    
+    [Authorize]
+    [HttpGet("subscribers")]
+    public async Task<List<UserSubscription>> GetSubscribers()
+    {
+        return await userService.GetSubscribers();
+    }
 }

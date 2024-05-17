@@ -89,5 +89,52 @@ public class UserService
 
         user.UserAccount.IsBanned = true;
         await _context.SaveChangesAsync();
-    } 
+    }
+
+    public async Task Subscribe(int userId)
+    {
+        var userToFollow = await _context.Users.FindAsync(userId);
+
+        if (userToFollow == null)
+        {
+            throw new RecipesValidationException("User doesn't exist");
+        }
+
+        var isAlreadySubscribed = _context.UserSubscriptions.AnyAsync(s => s.SubscriberId == _currentUser.Id && s.SubscriptionId == userId);
+
+        if (isAlreadySubscribed.Result)
+        {
+            return;
+        }
+        
+        await _context.UserSubscriptions.AddAsync(new UserSubscription
+        {
+            SubscriberId = _currentUser.Id,
+            SubscriptionId = userId,
+            SubscribedAt = DateTime.UtcNow
+        });
+
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task Unsubscribe(int userId)
+    {
+        var subscriptionToUnsubscribe = await _context.UserSubscriptions.FirstOrDefaultAsync(s => s.SubscriberId == _currentUser.Id && s.SubscriptionId == userId);
+        
+        if (subscriptionToUnsubscribe != null)
+        {
+            _context.UserSubscriptions.Remove(subscriptionToUnsubscribe);
+            await _context.SaveChangesAsync();
+        }
+    }
+    
+    public async Task<List<UserSubscription>> GetSubscriptions()
+    {
+        return await _context.UserSubscriptions.Include(u => u.Subscription).Where(s => s.SubscriberId == _currentUser.Id).ToListAsync();
+    }
+    
+    public async Task<List<UserSubscription>> GetSubscribers()
+    {
+        return await _context.UserSubscriptions.Include(u => u.Subscriber).Where(s => s.SubscriptionId == _currentUser.Id).ToListAsync();
+    }
 }
