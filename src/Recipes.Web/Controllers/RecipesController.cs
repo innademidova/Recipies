@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Recipes.BLL.Interfaces;
 using Recipes.DAL;
+using Recipes.DAL.Models;
 using Recipes.Mappers;
 using Recipes.ViewModels;
 
@@ -29,5 +30,18 @@ public class RecipesController(RecipesContext context, ILogger<RecipesController
         _logger.LogInformation("Created recipe by Author {AuthorId}", recipeDto.AuthorId);
 
         return recipeDto.ToViewModel();
+    }
+    
+    [HttpGet("{recipeId:int}/comments")]
+    public async Task<IEnumerable<Comment>> GetComments(int postId)
+    {
+        return await _recipeService.GetComments(postId);
+    }
+    
+    [HttpPost("{recipeId:int}/comments")]
+    [Authorize]
+    public async Task<Comment> CreateComment(int recipeId, CreateCommentRequest request)
+    {
+        return await _recipeService.CreateComment(recipeId, request.Text);
     }
 }

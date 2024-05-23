@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Recipes.DAL;
 
@@ -11,9 +12,11 @@ using Recipes.DAL;
 namespace Recipes.DAL.Migrations
 {
     [DbContext(typeof(RecipesContext))]
-    partial class RecipesContextModelSnapshot : ModelSnapshot
+    [Migration("20240520133126_AddedComment")]
+    partial class AddedComment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,7 +56,7 @@ namespace Recipes.DAL.Migrations
 
                     b.HasIndex("RecipeId");
 
-                    b.ToTable("Comments");
+                    b.ToTable("PostComments");
                 });
 
             modelBuilder.Entity("Recipes.DAL.Models.Recipe", b =>

@@ -8,6 +8,7 @@ public sealed class RecipesContext : DbContext
     public DbSet<Recipe> Recipes => Set<Recipe>();
     public DbSet<User> Users => Set<User>();
     public DbSet<UserSubscription> UserSubscriptions => Set<UserSubscription>();
+    public DbSet<Comment> Comments => Set<Comment>();
 
     public RecipesContext(DbContextOptions<RecipesContext> options) : base(options)
     {
@@ -47,6 +48,22 @@ public sealed class RecipesContext : DbContext
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasKey(e => new {e.SubscriberId, e.SubscriptionId});
+        });
+        
+        modelBuilder.Entity<Comment>(builder =>
+        {
+            builder.HasOne<User>()
+                .WithMany()
+                .HasForeignKey(x => x.AuthorId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            builder.HasOne<Recipe>()
+                .WithMany()
+                .HasForeignKey(r => r.RecipeId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Property(c => c.Text)
+                .HasMaxLength(1000);
         });
     }
 }

@@ -25,12 +25,12 @@ public class RecipeService : IRecipeService
             .Select(r => r.ToDto())
             .ToListAsync();
     }
-    
+
     public async Task<RecipeDto> CreateRecipe(string description, string imageUrl)
     {
         if (_currentUser.IsBanned)
         {
-            throw new RecipesValidationException ("You are banned");
+            throw new RecipesValidationException("You are banned");
         }
 
         var recipe = new Recipe
@@ -46,7 +46,31 @@ public class RecipeService : IRecipeService
 
         await _context.Entry(recipe).Reference(b => b.Author)
             .LoadAsync();
-        
+
         return recipe.ToDto();
+    }
+
+    public async Task<List<Comment>> GetComments(int recipeId)
+    {
+        return await _context.Comments
+            .Include(p => p.AuthorId)
+            .Where(c => c.RecipeId == recipeId)
+            .ToListAsync();
+    }
+
+    public async Task<Comment> CreateComment(int recipeId, string text)
+    {
+        var newComment = new Comment
+        {
+            Text = text,
+            AuthorId = _currentUser.Id,
+            CreatedAt = DateTime.UtcNow,
+            RecipeId = recipeId
+        };
+
+        await _context.Comments.AddAsync(newComment);
+        await _context.SaveChangesAsync();
+        
+        return newComment;
     }
 }

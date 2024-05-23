@@ -16,7 +16,7 @@ public class UsersController(RecipesContext context, UserService userService) : 
     [HttpGet]
     public async Task<IEnumerable<User>> Get()
     {
-        return await userService.GetRecipes();
+        return await userService.GetUsers();
     }
 
     [HttpPost("register")]

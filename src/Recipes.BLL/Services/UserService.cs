@@ -20,9 +20,9 @@ public class UserService
         _currentUser = currentUser;
     }
 
-    public async Task<IEnumerable<User>> GetRecipes()
+    public async Task<IEnumerable<User>> GetUsers()
     {
-        return await _context.Users.Include(u => u.UserAccount).ToListAsync();
+        return await _context.Users.Include(u => u.UserAccount).AsNoTracking().ToListAsync();
     }
     public async Task<Result<(int UserId, string AccessToken)>> Register(string firstName, string lastName, string email, string password)
     {
