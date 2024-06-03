@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Recipes.DAL;
 
@@ -11,9 +12,11 @@ using Recipes.DAL;
 namespace Recipes.DAL.Migrations
 {
     [DbContext(typeof(RecipesContext))]
-    partial class RecipesContextModelSnapshot : ModelSnapshot
+    [Migration("20240524222611_AddFavoriteCount")]
+    partial class AddFavoriteCount
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -74,6 +77,9 @@ namespace Recipes.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("FavoritesCount")
+                        .HasColumnType("int");
+
                     b.Property<string>("ImageUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -83,23 +89,6 @@ namespace Recipes.DAL.Migrations
                     b.HasIndex("AuthorId");
 
                     b.ToTable("Recipes");
-                });
-
-            modelBuilder.Entity("Recipes.DAL.Models.RecipeFavorite", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RecipeId")
-                        .HasColumnType("int");
-
-                    b.HasKey("UserId", "RecipeId");
-
-                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("UserId", "RecipeId"));
-
-                    b.HasIndex("RecipeId");
-
-                    b.ToTable("RecipeFavorites");
                 });
 
             modelBuilder.Entity("Recipes.DAL.Models.User", b =>
@@ -212,25 +201,6 @@ namespace Recipes.DAL.Migrations
                     b.Navigation("Author");
                 });
 
-            modelBuilder.Entity("Recipes.DAL.Models.RecipeFavorite", b =>
-                {
-                    b.HasOne("Recipes.DAL.Models.Recipe", "Recipe")
-                        .WithMany("Favorites")
-                        .HasForeignKey("RecipeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Recipes.DAL.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Recipe");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Recipes.DAL.Models.UserAccount", b =>
                 {
                     b.HasOne("Recipes.DAL.Models.User", null)
@@ -257,11 +227,6 @@ namespace Recipes.DAL.Migrations
                     b.Navigation("Subscriber");
 
                     b.Navigation("Subscription");
-                });
-
-            modelBuilder.Entity("Recipes.DAL.Models.Recipe", b =>
-                {
-                    b.Navigation("Favorites");
                 });
 
             modelBuilder.Entity("Recipes.DAL.Models.User", b =>

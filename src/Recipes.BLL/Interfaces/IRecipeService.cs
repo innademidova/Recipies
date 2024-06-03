@@ -9,4 +9,5 @@ public interface IRecipeService
     Task<RecipeDto> CreateRecipe(string description, string imageUrl);
     Task<List<Comment>> GetComments(int postId);
     Task<Comment> CreateComment(int recipeId, string text);
+    Task<int> AddToFavorite(int recipeId);
 }

@@ -9,6 +9,7 @@ public sealed class RecipesContext : DbContext
     public DbSet<User> Users => Set<User>();
     public DbSet<UserSubscription> UserSubscriptions => Set<UserSubscription>();
     public DbSet<Comment> Comments => Set<Comment>();
+    public DbSet<RecipeFavorite> RecipeFavorites => Set<RecipeFavorite>();
 
     public RecipesContext(DbContextOptions<RecipesContext> options) : base(options)
     {
@@ -64,6 +65,21 @@ public sealed class RecipesContext : DbContext
 
             builder.Property(c => c.Text)
                 .HasMaxLength(1000);
+        });
+        
+        modelBuilder.Entity<RecipeFavorite>(builder =>
+        {
+            builder.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(e => e.Recipe)
+                .WithMany(p => p.Favorites)
+                .HasForeignKey(p => p.RecipeId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasKey(e => new {e.UserId, e.RecipeId}).IsClustered();
         });
     }
 }

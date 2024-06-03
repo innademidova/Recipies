@@ -8,6 +8,6 @@ public static class RecipeMapper
     public static RecipeDto ToDto(this Recipe r)
     {
         return new RecipeDto(r.Id, r.Description, r.CreatedAt,
-            r.Author.FirstName, r.Author.LastName, r.Author.Id, r.ImageUrl);
+            r.Author.FirstName, r.Author.LastName, r.Author.Id, r.ImageUrl, r.Favorites.Count);
     }
 }

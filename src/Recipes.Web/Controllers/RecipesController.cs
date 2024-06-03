@@ -44,4 +44,10 @@ public class RecipesController(RecipesContext context, ILogger<RecipesController
     {
         return await _recipeService.CreateComment(recipeId, request.Text);
     }
+    
+    [HttpPut("{recipeId:int}/favorite")]
+    public async Task<int> AddToFavorite(int recipeId)
+    {
+        return await _recipeService.AddToFavorite(recipeId);
+    }
 }

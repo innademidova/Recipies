@@ -22,6 +22,7 @@ public class RecipeService : IRecipeService
     public async Task<IEnumerable<RecipeDto>> GetRecipes()
     {
         return await _context.Recipes.Include(r => r.Author)
+            .Include(r => r.Favorites)
             .Select(r => r.ToDto())
             .ToListAsync();
     }
@@ -72,5 +73,33 @@ public class RecipeService : IRecipeService
         await _context.SaveChangesAsync();
         
         return newComment;
+    }
+    
+    public async Task<int> AddToFavorite(int recipeId)
+    {
+        var recipe = await _context.Recipes.FindAsync(recipeId);
+        if (recipe == null)
+        {
+            throw new RecipesValidationException("Recipe not found");
+        }
+
+        var isAddedToFavorite = await _context.RecipeFavorites
+            .AnyAsync(favorite => favorite.RecipeId == recipeId && favorite.UserId == _currentUser.Id);
+
+        if (isAddedToFavorite)
+        {
+            return _context.RecipeFavorites.Count(favorite => favorite.RecipeId == recipeId);
+        }
+
+        var newFavorite = new RecipeFavorite
+        {
+            RecipeId = recipeId,
+            UserId = _currentUser.Id
+        };
+
+        _context.RecipeFavorites.Add(newFavorite);
+        await _context.SaveChangesAsync();
+
+        return _context.RecipeFavorites.Count(favorite => favorite.RecipeId == recipeId);
     }
 }
