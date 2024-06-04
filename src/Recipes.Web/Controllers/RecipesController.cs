@@ -50,4 +50,10 @@ public class RecipesController(RecipesContext context, ILogger<RecipesController
     {
         return await _recipeService.AddToFavorite(recipeId);
     }
+    
+    [HttpPut("{recipeId:int}/revomefavorite")]
+    public async Task<int> RemoveFromFavorite(int recipeId)
+    {
+        return await _recipeService.RemoveFromFavorite(recipeId);
+    }
 }

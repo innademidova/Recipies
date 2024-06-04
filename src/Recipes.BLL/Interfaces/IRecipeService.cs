@@ -10,4 +10,5 @@ public interface IRecipeService
     Task<List<Comment>> GetComments(int postId);
     Task<Comment> CreateComment(int recipeId, string text);
     Task<int> AddToFavorite(int recipeId);
+    Task<int> RemoveFromFavorite(int recipeId);
 }
