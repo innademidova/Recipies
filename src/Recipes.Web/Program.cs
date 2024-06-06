@@ -29,7 +29,7 @@ builder.Services
 
 var app = builder.Build();
 
-app.MapControllers();
+app.MapControllers().RequireAuthorization();
 
 app
     .InDevelopment(b =>

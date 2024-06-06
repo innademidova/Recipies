@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 using Recipes.BLL.DTOs.Recipe;
 using Recipes.BLL.Exceptions;
 using Recipes.BLL.Interfaces;
@@ -19,10 +20,16 @@ public class RecipeService : IRecipeService
         _currentUser = currentUser;
     }
 
-    public async Task<IEnumerable<RecipeDto>> GetRecipes()
+    public async Task<IEnumerable<RecipeDto>> GetRecipes([Range(1, 1000)] int pageSize,
+        [Range(1, int.MaxValue)] int pageNumber)
     {
-        return await _context.Recipes.Include(r => r.Author)
+        return await _context.Recipes
+            .OrderByDescending(c => c.CreatedAt)
+            .Skip(pageSize * (pageNumber - 1))
+            .Take(pageSize)
+            .Include(r => r.Author)
             .Include(r => r.Favorites)
+            .Include(r => r.Comments)
             .Select(r => r.ToDto(_currentUser.Id))
             .ToListAsync();
     }
@@ -51,11 +58,15 @@ public class RecipeService : IRecipeService
         return recipe.ToDto(_currentUser.Id);
     }
 
-    public async Task<List<Comment>> GetComments(int recipeId)
+    public async Task<List<Comment>> GetComments(int recipeId,
+        [Range(1, 1000)] int pageSize,
+        [Range(1, int.MaxValue)] int pageNumber)
     {
         return await _context.Comments
-            .Include(p => p.AuthorId)
             .Where(c => c.RecipeId == recipeId)
+            .OrderByDescending(c => c.CreatedAt)
+            .Skip(pageSize * (pageNumber - 1))
+            .Take(pageSize)
             .ToListAsync();
     }
 
@@ -71,13 +82,14 @@ public class RecipeService : IRecipeService
 
         await _context.Comments.AddAsync(newComment);
         await _context.SaveChangesAsync();
-        
+
         return newComment;
     }
-    
+
     public async Task<int> AddToFavorite(int recipeId)
     {
         var recipe = await _context.Recipes.FindAsync(recipeId);
+
         if (recipe == null)
         {
             throw new RecipesValidationException("Recipe not found");
@@ -102,24 +114,25 @@ public class RecipeService : IRecipeService
 
         return _context.RecipeFavorites.Count(favorite => favorite.RecipeId == recipeId);
     }
-    
+
     public async Task<int> RemoveFromFavorite(int recipeId)
     {
         var recipe = await _context.Recipes.FindAsync(recipeId);
+
         if (recipe == null)
         {
             throw new RecipesValidationException("Recipe not found");
         }
 
         var recipeFavorite = await _context.RecipeFavorites.FirstOrDefaultAsync(favorite => favorite.UserId == _currentUser.Id
-            && favorite.RecipeId == recipeId);
+                                                                                            && favorite.RecipeId == recipeId);
 
         if (recipeFavorite != null)
         {
             _context.RecipeFavorites.Remove(recipeFavorite);
             await _context.SaveChangesAsync();
         }
-        
+
         return _context.RecipeFavorites.Count(favorite => favorite.RecipeId == recipeId);
     }
 }

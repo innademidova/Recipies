@@ -1,8 +1,10 @@
 ﻿using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
 using Recipes.BLL.Authentication;
+using Recipes.BLL.DTOs.User;
 using Recipes.BLL.Exceptions;
 using Recipes.BLL.Interfaces;
+using Recipes.BLL.Mappers;
 using Recipes.DAL;
 using Recipes.DAL.Models;
 
@@ -136,5 +138,12 @@ public class UserService
     public async Task<List<UserSubscription>> GetSubscribers()
     {
         return await _context.UserSubscriptions.Include(u => u.Subscriber).Where(s => s.SubscriptionId == _currentUser.Id).ToListAsync();
+    }
+    
+    public async Task<AccountDetailsDto> GetCurrentAccountDetail()
+    {
+        var currentUser = await _context.Users.Include(u => u.UserAccount).FirstAsync(u => u.Id == _currentUser.Id);
+
+        return currentUser.ToDto();
     }
 }

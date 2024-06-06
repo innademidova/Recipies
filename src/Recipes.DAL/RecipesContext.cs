@@ -59,7 +59,7 @@ public sealed class RecipesContext : DbContext
                 .OnDelete(DeleteBehavior.Restrict);
             
             builder.HasOne<Recipe>()
-                .WithMany()
+                .WithMany(e => e.Comments)
                 .HasForeignKey(r => r.RecipeId)
                 .OnDelete(DeleteBehavior.Cascade);
 

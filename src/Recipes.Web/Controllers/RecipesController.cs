@@ -13,9 +13,10 @@ namespace Recipes.Controllers;
 public class RecipesController(RecipesContext context, ILogger<RecipesController> _logger, IRecipeService _recipeService) : ControllerBase
 {
     [HttpGet]
-    public async Task<IEnumerable<RecipeViewModel>> Get()
+    [AllowAnonymous]
+    public async Task<IEnumerable<RecipeViewModel>> Get(int pageSize = 5, int pageNumber = 1)
     {
-        var recipes = await _recipeService.GetRecipes();
+        var recipes = await _recipeService.GetRecipes(pageSize, pageNumber);
         var recipesViewModel = recipes.Select(r =>
             r.ToViewModel());
 
@@ -33,9 +34,10 @@ public class RecipesController(RecipesContext context, ILogger<RecipesController
     }
     
     [HttpGet("{recipeId:int}/comments")]
-    public async Task<IEnumerable<Comment>> GetComments(int postId)
+    [AllowAnonymous]
+    public async Task<IEnumerable<Comment>> GetComments(int recipeId, int pageSize = 5, int pageNumber = 1)
     {
-        return await _recipeService.GetComments(postId);
+        return await _recipeService.GetComments(recipeId, pageSize, pageNumber);
     }
     
     [HttpPost("{recipeId:int}/comments")]

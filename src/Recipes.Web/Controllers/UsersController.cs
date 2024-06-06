@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Recipes.BLL.DTOs.User;
 using Recipes.BLL.Services;
 using Recipes.DAL;
 using Recipes.DAL.Models;
@@ -20,6 +21,7 @@ public class UsersController(RecipesContext context, UserService userService) : 
     }
 
     [HttpPost("register")]
+    [AllowAnonymous]
     public async Task<ActionResult<RegistrationResponse>> Register(RegistrationRequest request)
     {
         var userResponse = await userService.Register(request.FirstName, request.LastName, request.Email, request.Password);
@@ -28,6 +30,7 @@ public class UsersController(RecipesContext context, UserService userService) : 
     }
 
     [HttpPost("login")]
+    [AllowAnonymous]
     public async Task<ActionResult<RegistrationResponse>> Login(LoginRequest request)
     {
         var loginResponse = await userService.Login(request.Email, request.Password);
@@ -68,5 +71,12 @@ public class UsersController(RecipesContext context, UserService userService) : 
     public async Task<List<UserSubscription>> GetSubscribers()
     {
         return await userService.GetSubscribers();
+    }
+    
+    [HttpGet("me")]
+    [Authorize]
+    public async Task<ActionResult<AccountDetailsDto>> GetMyInfo()
+    {
+        return await userService.GetCurrentAccountDetail();
     }
 }

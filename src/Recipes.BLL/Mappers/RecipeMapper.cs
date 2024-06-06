@@ -9,6 +9,6 @@ public static class RecipeMapper
     {
         return new RecipeDto(r.Id, r.Description, r.CreatedAt,
             r.Author.FirstName, r.Author.LastName, r.Author.Id, r.ImageUrl,
-            r.Favorites.Count, r.Favorites.Any(f => f.UserId == currentUserId));
+            r.Favorites.Count, r.Favorites.Any(f => f.UserId == currentUserId), r.Comments.Count);
     }
 }

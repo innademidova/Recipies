@@ -2,4 +2,4 @@
 
 
 public record RecipeViewModel(int Id, string Description, DateTime CreatedAt, string AuthorFirstName, string AuthorLastName, 
-    int AuthorId, string ImageUrl, int FavoritesCount, bool IsAddedToFavoriteByCurrentUser);
+    int AuthorId, string ImageUrl, int FavoritesCount, bool IsAddedToFavoriteByCurrentUser, int CommentsCount);
