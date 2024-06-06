@@ -46,27 +46,23 @@ public class UsersController(RecipesContext context, UserService userService) : 
     }
     
     [HttpPut("subscribe/{userId:int}")]
-    [Authorize]
     public async Task Subscribe(int userId)
     {
         await userService.Subscribe(userId);
     }
-    
-    [Authorize]
+
     [HttpPut("unsubscribe/{userId:int}")]
     public async Task Unsubscribe(int userId)
     {
         await userService.Unsubscribe(userId);
     }
     
-    [Authorize]
     [HttpGet("subscriptions")]
     public async Task<List<UserSubscription>> GetSubscriptions()
     {
         return await userService.GetSubscriptions();
     }
     
-    [Authorize]
     [HttpGet("subscribers")]
     public async Task<List<UserSubscription>> GetSubscribers()
     {
@@ -74,7 +70,6 @@ public class UsersController(RecipesContext context, UserService userService) : 
     }
     
     [HttpGet("me")]
-    [Authorize]
     public async Task<ActionResult<AccountDetailsDto>> GetMyInfo()
     {
         return await userService.GetCurrentAccountDetail();

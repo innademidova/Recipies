@@ -41,7 +41,6 @@ public class RecipesController(RecipesContext context, ILogger<RecipesController
     }
     
     [HttpPost("{recipeId:int}/comments")]
-    [Authorize]
     public async Task<Comment> CreateComment(int recipeId, CreateCommentRequest request)
     {
         return await _recipeService.CreateComment(recipeId, request.Text);
